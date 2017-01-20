@@ -42,8 +42,8 @@ void depthCallback(const image_msg::ConstPtr& img, cv::Mat *depthImg)
     im16.convertTo(*depthImg, CV_8UC1, 255/(max-min), -min);
     //QImage image(im8.data, im8.cols, im8.rows, static_cast<int>(im8.step),QImage::Format_Indexed8);
     //ui->display_camera->setPixmap(QPixmap::fromImage(image));
-	ROS_INFO("CB: IMG ROWSIZE: [%d]", depthImg->rows);        
-	cv::imshow("view", *depthImg);
+	ROS_INFO("CB: IMG ROWSIZE: [%d]    CB:IMG COLSIZE: [%d]", depthImg->rows, depthImg->cols);        
+	//cv::imshow("view", *depthImg);
     	//cv::waitKey(30);    	
  
 }
@@ -64,8 +64,11 @@ int main(int argc, char **argv) {
     
     while(ros::ok())
     {
-	ROS_INFO("MAIN: IMG ROWSIZE: [%d]", depthImg.rows);
-	testImg = depthImg;	
+	ROS_INFO("MAIN: IMG ROWSIZE: [%d]    IMG COLSIZE: [%d]", depthImg.rows, depthImg.cols);
+	//testImg = depthImg;	
+	if(depthImg.cols != 0){
+		cv::imshow("view", depthImg);	
+	}
 	
 	ros::spinOnce();
         loop_rate.sleep();
