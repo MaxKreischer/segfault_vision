@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     while(ros::ok())
     {
 	ROS_INFO("MAIN: IMG ROWSIZE: [%d]", depthImg.rows);
-	//testImg = depthImg;	
+	testImg = depthImg;	
 	
 	ros::spinOnce();
         loop_rate.sleep();
