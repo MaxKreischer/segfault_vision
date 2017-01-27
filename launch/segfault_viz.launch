@@ -7,10 +7,11 @@
   <node pkg="segfault_vision" type="segfault_vision_node" name="segfault_vision" output="screen"/>
 <!---Depthimage to Laserscan -->
   <node name="depthimage_to_laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan">
-      <remap from="image" to="/kinect2/sd/image_depth"/>
-      <remap from="camera_info" to="/kinect2/sd/camera_info"/>
-      <remap from="/scan" to="laserscan"/>
+      <remap from="image" to="kinect2/sd/image_depth"/>
+      <remap from="camera_info" to="kinect2/sd/camera_info"/>
+      <remap from="scan" to="laserscan"/>
   </node>
   </group>
 </launch>
+
 
