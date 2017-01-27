@@ -23,49 +23,57 @@
 #include <sstream>
 
 typedef sensor_msgs::Image image_msg;
-
+cv::Mat depthImg;
 //Callback functions
-void depthCallback(const image_msg::ConstPtr& img, cv::Mat depthImg)
+void depthCallback(const image_msg::ConstPtr& img, cv::Mat *depthImg)
 {
     cv_bridge::CvImagePtr cv_ptr;
+    cv::Mat im16;
     try{
         cv_ptr = cv_bridge::toCvCopy(*img, img->encoding);
+        im16 = cv_ptr->image;
+
     }catch(cv_bridge::Exception& e){
         ROS_ERROR("cv_bridge exception: %s", e.what());
     }
-    depthImg = cv_ptr->image;
-    /*
+
     double min,max;
     cv::minMaxIdx(im16, &min, &max);
-    cv::Mat im8;
-    im16.convertTo(im8, CV_8UC1, 255/(max-min), -min);
-    QImage image(im8.data, im8.cols, im8.rows, static_cast<int>(im8.step),QImage::Format_Indexed8);
-    ui->display_camera->setPixmap(QPixmap::fromImage(image));
-    */
+    im16.convertTo(*depthImg, CV_8UC1, 255/(max-min), -min);
+    //QImage image(im8.data, im8.cols, im8.rows, static_cast<int>(im8.step),QImage::Format_Indexed8);
+    //ui->display_camera->setPixmap(QPixmap::fromImage(image));
+    ROS_INFO("CB: IMG ROWSIZE: [%d]    CB:IMG COLSIZE: [%d]", depthImg->rows, depthImg->cols);
+    //cv::imshow("view", *depthImg);
+    //cv::waitKey(30);
+
 }
 
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "segfault_vision");
-    ros::NodeHandle *nviz;
-    ros::Rate loop_rate(40);
-    cv::Mat depthImg;
+    ros::NodeHandle nviz;
+    ros::Rate loop_rate(30);
 
+    cv::Mat testImg;
     cv::namedWindow("view");
     cv::startWindowThread();
-    ros::Subscriber depthSub = nviz->subscribe<image_msg>("kinect2/sd/image_depth", 10, boost::bind(depthCallback, _1, depthImg));
-    cv::imshow("view", depthImg);
+    ros::Subscriber depthSub = nviz.subscribe<image_msg>("kinect2/sd/image_depth", 1, boost::bind(depthCallback, _1, &depthImg));
 
-    ros::spin();
-    cv::destroyWindow("view");
-    /*
+
+
+
     while(ros::ok())
     {
+        ROS_INFO("MAIN: IMG ROWSIZE: [%d]    IMG COLSIZE: [%d]", depthImg.rows, depthImg.cols);
+        //testImg = depthImg;
+        if(depthImg.cols != 0){
+            cv::imshow("view", depthImg);
+        }
+
         ros::spinOnce();
         loop_rate.sleep();
     }
-     */
-/*Subscriptions from other ROS Nodes*/
-   // ros::spin();
-
+    //Subscriptions from other ROS Nodes
+    ros::spin();
+    cv::destroyWindow("view");
 }
