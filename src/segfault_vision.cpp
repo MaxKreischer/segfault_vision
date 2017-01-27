@@ -9,6 +9,7 @@
 #include <pses_basis/CarInfo.h>
 #include <sensor_msgs/Range.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/LaserScan.h>
 #include <nav_msgs/Odometry.h>
 #include <functional>
 //Image related
@@ -22,8 +23,10 @@
 #include <string>
 #include <sstream>
 
-typedef sensor_msgs::Image image_msg;
+typedef sensor_msgs::Image      image_msg;
+typedef sensor_msgs::LaserScan  laserscan_msg;
 cv::Mat depthImg;
+laserscan_msg laserscan;
 //Callback functions
 void depthCallback(const image_msg::ConstPtr& img, cv::Mat *depthImg)
 {
@@ -48,6 +51,10 @@ void depthCallback(const image_msg::ConstPtr& img, cv::Mat *depthImg)
 
 }
 
+void laserscanCallback(const laserscan_msg::ConstPtr& msg, laserscan_msg* laserscan){
+    *laserscan = *msg;
+}
+
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "segfault_vision");
@@ -58,7 +65,7 @@ int main(int argc, char **argv) {
     cv::namedWindow("view");
     cv::startWindowThread();
     ros::Subscriber depthSub = nviz.subscribe<image_msg>("kinect2/sd/image_depth", 1, boost::bind(depthCallback, _1, &depthImg));
-
+    ros::Subscriber laserSub = nviz.subscribe<laserscan_msg>("scan", 1, boost::bind(laserscanCallback, _1, &laserscan));
 
 
 
