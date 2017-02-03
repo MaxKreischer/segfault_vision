@@ -26,7 +26,7 @@
 typedef sensor_msgs::Image      image_msg;
 typedef sensor_msgs::LaserScan  laserscan_msg;
 cv::Mat depthImg;
-laserscan_msg laserscan;
+laserscan_msg scan;
 //Callback functions
 void depthCallback(const image_msg::ConstPtr& img, cv::Mat *depthImg)
 {
@@ -51,8 +51,8 @@ void depthCallback(const image_msg::ConstPtr& img, cv::Mat *depthImg)
 
 }
 
-void laserscanCallback(const laserscan_msg::ConstPtr& msg, laserscan_msg* laserscan){
-    *laserscan = *msg;
+void laserscanCallback(const laserscan_msg::ConstPtr& msg, laserscan_msg* scan){
+    *scan = *msg;
 }
 
 
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     cv::namedWindow("view");
     cv::startWindowThread();
     ros::Subscriber depthSub = nviz.subscribe<image_msg>("kinect2/sd/image_depth", 1, boost::bind(depthCallback, _1, &depthImg));
-    ros::Subscriber laserSub = nviz.subscribe<laserscan_msg>("scan", 1, boost::bind(laserscanCallback, _1, &laserscan));
+    ros::Subscriber laserSub = nviz.subscribe<laserscan_msg>("scan", 1, boost::bind(laserscanCallback, _1, &scan));
 
 
 
